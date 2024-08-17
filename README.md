@@ -1,40 +1,22 @@
-# Welcome to Remix!
+# Note
 
-- 📖 [Remix docs](https://remix.run/docs)
+- レンダリング時  
+  →loader が反応
 
-## Development
+- `<Form method="post">`  
+  →action が反応
 
-Run the dev server:
+- `<Form method="get">`  
+  →loader が反応
 
-```shellscript
-npm run dev
-```
+- `<Form action="edit" method="get">`  
+  →\_.edit.tsx に遷移 + 遷移先の loader が反応  
+  リクエスト url に\_edit が付与されている
 
-## Deployment
+- `<Form action="destroy" method="post">`  
+  →destroy.tsx に遷移 + 遷移先の action が反応  
+  リクエスト url に destory が付与されている
 
-First, build your app for production:
-
-```sh
-npm run build
-```
-
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+- `<Form action="sample" method="post">`  
+  →sample.tsx に遷移 + 遷移先の action が反応  
+  リクエスト url に sample が付与されている

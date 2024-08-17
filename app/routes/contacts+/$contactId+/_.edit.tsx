@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useNavigate } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { getContact, updateContact } from "../../../data";
@@ -26,6 +26,7 @@ export const action = async ({ params, request }: ActionFunctionArgs) => {
 
 export default function EditContact() {
   const { contact } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
 
   return (
     <Form key={contact.id} id="contact-form" method="post">
@@ -38,11 +39,22 @@ export default function EditContact() {
           type="text"
           placeholder="First"
         />
-        <input aria-label="ラストネーム" defaultValue={contact.last} name="last" placeholder="Last" type="text" />
+        <input
+          aria-label="ラストネーム"
+          defaultValue={contact.last}
+          name="last"
+          placeholder="Last"
+          type="text"
+        />
       </p>
       <label>
         <span>Twitter</span>
-        <input defaultValue={contact.twitter} name="twitter" placeholder="@jack" type="text" />
+        <input
+          defaultValue={contact.twitter}
+          name="twitter"
+          placeholder="@jack"
+          type="text"
+        />
       </label>
       <label>
         <span>アバターURL</span>
@@ -60,7 +72,9 @@ export default function EditContact() {
       </label>
       <p>
         <button type="submit">保存</button>
-        <button type="button">キャンセル</button>
+        <button onClick={() => navigate(-1)} type="button">
+          キャンセル
+        </button>
       </p>
     </Form>
   );

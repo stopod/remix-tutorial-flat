@@ -1,11 +1,11 @@
 import { json } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useFetcher } from "@remix-run/react";
 import type { FunctionComponent } from "react";
-import type { LoaderFunctionArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs, ActionFunctionArgs } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 import type { ContactRecord } from "../../../data";
-import { getContact } from "../../../data";
+import { getContact, updateContact } from "../../../data";
 
 // urlの動的な部分$contactIdがparamsに入ってくる
 export const loader = async ({ params }: LoaderFunctionArgs) => {
@@ -19,13 +19,26 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return json({ contact });
 };
 
+export const action = async ({ params, request }: ActionFunctionArgs) => {
+  console.log(params, request);
+  invariant(params.contactId, "Missing contactId param");
+  const formData = await request.formData();
+  return updateContact(params.contactId, {
+    favorite: formData.get("favorite") === "true",
+  });
+};
+
 export default function Contact() {
   const { contact } = useLoaderData<typeof loader>();
 
   return (
     <div id="contact">
       <div>
-        <img alt={`${contact.first} ${contact.last} avatar`} key={contact.avatar} src={contact.avatar} />
+        <img
+          alt={`${contact.first} ${contact.last} avatar`}
+          key={contact.avatar}
+          src={contact.avatar}
+        />
       </div>
 
       <div>
@@ -57,13 +70,28 @@ export default function Contact() {
             action="destroy"
             method="post"
             onSubmit={(event) => {
-              const response = confirm("Please confirm you want to delete this record.");
+              const response = confirm(
+                "Please confirm you want to delete this record."
+              );
               if (!response) {
                 event.preventDefault();
               }
             }}
           >
             <button type="submit">Delete</button>
+          </Form>
+
+          <Form
+            action="sample"
+            method="post"
+            onSubmit={(event) => {
+              const response = confirm("sample.");
+              if (!response) {
+                event.preventDefault();
+              }
+            }}
+          >
+            <button type="submit">Sample</button>
           </Form>
         </div>
       </div>
@@ -74,10 +102,13 @@ export default function Contact() {
 const Favorite: FunctionComponent<{
   contact: Pick<ContactRecord, "favorite">;
 }> = ({ contact }) => {
-  const favorite = contact.favorite;
+  const fetcher = useFetcher();
+  const favorite = fetcher.formData
+    ? fetcher.formData.get("favorite") === "true"
+    : contact.favorite;
 
   return (
-    <Form method="post">
+    <fetcher.Form method="post">
       <button
         aria-label={favorite ? "Remove from favorites" : "Add to favorites"}
         name="favorite"
@@ -85,6 +116,6 @@ const Favorite: FunctionComponent<{
       >
         {favorite ? "★" : "☆"}
       </button>
-    </Form>
+    </fetcher.Form>
   );
 };
